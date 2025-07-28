@@ -1,0 +1,9 @@
+Options -Indexes
+ErrorDocument 403 /hospital_sampaka23/public/403.php
+RewriteEngine On
+RewriteBase /hospital_sampaka23/
+
+# Redirigir todo a index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
