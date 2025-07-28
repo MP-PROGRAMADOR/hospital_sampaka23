@@ -2,32 +2,40 @@
 -- BASE DE DATOS: Hospital de Sampaka
 -- ============================================
 
--- Tabla: personal
+DROP DATABASE IF EXISTS hospital_sampaka;
+CREATE DATABASE hospital_sampaka;
+USE hospital_sampaka;
+
+-- ========================
+-- TABLA: personal
+-- ========================
 CREATE TABLE personal (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     apellidos VARCHAR(100),
     fecha_nacimiento DATE,
     direccion VARCHAR(255),
-    correo VARCHAR(100), -- Puede ser nulo
+    correo VARCHAR(100),
     telefono VARCHAR(20),
     especialidad VARCHAR(100),
     codigo VARCHAR(50),
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla: roles
+-- ========================
+-- TABLA: roles
+-- ========================
 CREATE TABLE roles (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50),
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    id_usuario INT
-    -- FOREIGN KEY se añadirá luego para evitar ciclos
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla: usuarios
+-- ========================
+-- TABLA: usuarios
+-- ========================
 CREATE TABLE usuarios (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(50) UNIQUE,
     password VARCHAR(255),
     id_personal INT,
@@ -38,13 +46,11 @@ CREATE TABLE usuarios (
     FOREIGN KEY (id_rol) REFERENCES roles(id)
 );
 
--- Relación ciclo: roles → usuarios (ahora puede añadirse)
-ALTER TABLE roles
-ADD CONSTRAINT fk_roles_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id);
-
--- Tabla: tipo_de_pruebas
+-- ========================
+-- TABLA: tipo_de_pruebas
+-- ========================
 CREATE TABLE tipo_de_pruebas (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     precio DECIMAL(10,2),
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -52,28 +58,32 @@ CREATE TABLE tipo_de_pruebas (
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
--- Tabla: pacientes
+-- ========================
+-- TABLA: pacientes
+-- ========================
 CREATE TABLE pacientes (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     apellidos VARCHAR(100),
     fecha_nacimiento DATE,
-    dip VARCHAR(50), -- Puede ser nulo
+    dip VARCHAR(50),
     sexo VARCHAR(10),
     direccion VARCHAR(255),
     email VARCHAR(100),
     telefono VARCHAR(20),
     profesion VARCHAR(100),
-    tutor VARCHAR(100), -- Puede ser nulo
-    telefono_tutor VARCHAR(20), -- Puede ser nulo
+    tutor VARCHAR(100),
+    telefono_tutor VARCHAR(20),
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_usuario INT,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
--- Tabla: consultas
+-- ========================
+-- TABLA: consultas
+-- ========================
 CREATE TABLE consultas (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     motivo_consulta TEXT,
     temperatura DECIMAL(4,1),
     frecuencia_cardiaca INT,
@@ -94,9 +104,11 @@ CREATE TABLE consultas (
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
--- Tabla: detalles_consulta
+-- ========================
+-- TABLA: detalles_consulta
+-- ========================
 CREATE TABLE detalles_consulta (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     operacion BOOLEAN,
     orina_bien BOOLEAN,
     horas_duerme INT,
@@ -112,9 +124,11 @@ CREATE TABLE detalles_consulta (
     FOREIGN KEY (id_consulta) REFERENCES consultas(id)
 );
 
--- Tabla: citas
+-- ========================
+-- TABLA: citas
+-- ========================
 CREATE TABLE citas (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     id_paciente INT,
     comentario TEXT,
     fecha_cita DATE,
@@ -129,19 +143,21 @@ CREATE TABLE citas (
     FOREIGN KEY (id_usuario_con_quien_cita) REFERENCES usuarios(id)
 );
 
--- Tabla: analiticas
+-- ========================
+-- TABLA: analiticas
+-- ========================
 CREATE TABLE analiticas (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     resultado TEXT,
     estado VARCHAR(50),
     id_tipo_prueba INT,
-    id_consulta INT, -- puede ser nulo
+    id_consulta INT,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_usuario INT,
     id_paciente INT,
     codigo_paciente VARCHAR(50),
     pagado BOOLEAN,
-    valores_referencia TEXT, -- puede ser nulo
+    valores_referencia TEXT,
     id_cita INT,
     FOREIGN KEY (id_tipo_prueba) REFERENCES tipo_de_pruebas(id),
     FOREIGN KEY (id_consulta) REFERENCES consultas(id),
@@ -150,26 +166,30 @@ CREATE TABLE analiticas (
     FOREIGN KEY (id_cita) REFERENCES citas(id)
 );
 
--- Tabla: receta
+-- ========================
+-- TABLA: receta
+-- ========================
 CREATE TABLE receta (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     descripcion TEXT,
-    id_consulta INT, -- puede ser nulo
+    id_consulta INT,
     id_paciente INT,
     codigo_paciente VARCHAR(50),
     comentario TEXT,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_usuario INT,
-    id_cita INT, -- puede ser nulo
+    id_cita INT,
     FOREIGN KEY (id_consulta) REFERENCES consultas(id),
     FOREIGN KEY (id_paciente) REFERENCES pacientes(id),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
     FOREIGN KEY (id_cita) REFERENCES citas(id)
 );
 
--- Tabla: pagos_analiticas
+-- ========================
+-- TABLA: pagos_analiticas
+-- ========================
 CREATE TABLE pagos_analiticas (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     cantidad DECIMAL(10,2),
     id_analitica INT,
     id_tipo_prueba INT,
@@ -180,18 +200,22 @@ CREATE TABLE pagos_analiticas (
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
--- Tabla: salas_de_ingreso
+-- ========================
+-- TABLA: salas_de_ingreso
+-- ========================
 CREATE TABLE salas_de_ingreso (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_usuario INT,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
--- Tabla: ingresos
+-- ========================
+-- TABLA: ingresos
+-- ========================
 CREATE TABLE ingresos (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     id_paciente INT,
     id_sala INT,
     fecha_ingreso DATE,
@@ -205,9 +229,11 @@ CREATE TABLE ingresos (
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
--- Tabla: log
+-- ========================
+-- TABLA: log
+-- ========================
 CREATE TABLE log (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT,
     actividad TEXT,
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
