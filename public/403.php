@@ -80,7 +80,7 @@
   <div class="box">
     <h1>403 - Acceso Denegado</h1>
     <p>No tienes permiso para acceder a esta carpeta.</p>
-    <a href="/hospital_sampaka23/public/index.php">Volver al inicio</a>
+    <a href="index.php?pagina=404">Volver al inicio</a>
   </div>
 </body>
 </html>

@@ -1,0 +1,6 @@
+#  Bloquea acceso directo a cualquier archivo en /views/
+Order allow,deny
+Deny from all
+
+#  Si se intenta acceder igual, usar tu página 403 personalizada
+ErrorDocument 403 /hospital_sampaka23/public/index.php
