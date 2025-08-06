@@ -1,6 +1,0 @@
- 
-
-RewriteEngine On
-
-#  Si accede directamente a la carpeta raíz, reescribir internamente a index.php para cargar login
-RewriteRule ^$ /hospital_sampaka23/public/index.php?pagina=login [L]
