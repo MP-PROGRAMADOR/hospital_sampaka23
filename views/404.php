@@ -18,7 +18,7 @@
     <h1>404</h1>
     <h2>Página no encontrada</h2>
     <p>La página que buscas no existe o fue movida.</p>
-    <a href="/hospital_sampaka23/public/home">🔙 Volver al inicio</a>
+    <a href="logout.php">🔙 Volver al inicio</a>
 </div>
 </body>
 </html>

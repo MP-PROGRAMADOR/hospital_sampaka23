@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -43,7 +44,7 @@
       background: rgba(0, 0, 0, 0.5);
       padding: 1.5rem;
       border-radius: 10px;
-      animation: fadeInUp 1s ease-in-out; 
+      animation: fadeInUp 1s ease-in-out;
 
     }
 
@@ -114,13 +115,27 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @media (max-width: 768px) {
@@ -179,12 +194,13 @@
           <p class="text-muted">Acceso al sistema</p>
         </div>
 
-        <form id="loginForm" method="POST" action="api/login.php" novalidate>
+        <form id="loginForm"  novalidate>
           <div class="mb-3">
             <label for="username" class="form-label">Usuario</label>
             <div class="input-group">
               <span class="input-group-text"><i class="bi bi-person"></i></span>
-              <input type="text" class="form-control" id="username" name="usuario" placeholder="Ingrese su usuario" required>
+              <input type="text" class="form-control" id="username" name="usuario" placeholder="Ingrese su usuario"
+                required>
             </div>
             <div id="userError" class="form-text text-danger"></div>
           </div>
@@ -193,7 +209,8 @@
             <label for="password" class="form-label">Contraseña</label>
             <div class="input-group">
               <span class="input-group-text"><i class="bi bi-lock"></i></span>
-              <input type="password" class="form-control" id="password" name="contrasena" placeholder="Ingrese su contraseña" required>
+              <input type="password" class="form-control" id="password" name="contrasena"
+                placeholder="Ingrese su contraseña" required>
               <span class="input-group-text toggle-password" onclick="togglePassword()">
                 <i class="bi bi-eye" id="toggleIcon"></i>
               </span>
@@ -211,28 +228,61 @@
     </div>
   </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    function togglePassword() {
-      const passwordInput = document.getElementById('password');
-      const toggleIcon = document.getElementById('toggleIcon');
-      const type = passwordInput.type === 'password' ? 'text' : 'password';
-      passwordInput.type = type;
-      toggleIcon.classList.toggle('bi-eye');
-      toggleIcon.classList.toggle('bi-eye-slash');
-    }
 
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
-      const username = document.getElementById('username');
-      const password = document.getElementById('password');
-      const userError = document.getElementById('userError');
-      const passError = document.getElementById('passError');
-      let valid = true;
 
+  <!-- MODAL PARA REGISTRAR EL PRIMER USUARIO SI NO EXISTE -->
+<!-- Modal: Confirmar creación de usuario administrador -->
+<div class="modal fade" id="crearUsuarioModal" tabindex="-1" aria-labelledby="crearUsuarioModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Inicializar sistema</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>No hay usuarios registrados en el sistema.</p>
+        <p>¿Deseas crear el usuario administrador <strong>"salvador"</strong>?</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnCrearUsuario">Crear administrador</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+
+<!-- Script de Login -->
+<script defer>
+  function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = document.getElementById('toggleIcon');
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    toggleIcon.classList.toggle('bi-eye');
+    toggleIcon.classList.toggle('bi-eye-slash');
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById('loginForm');
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const userError = document.getElementById('userError');
+    const passError = document.getElementById('passError');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Limpiar errores
       userError.textContent = '';
       passError.textContent = '';
+
+      let valid = true;
 
       if (username.value.trim() === '') {
         userError.textContent = 'Por favor, ingresa tu nombre de usuario.';
@@ -244,9 +294,60 @@
         valid = false;
       }
 
-      if (!valid) e.preventDefault();
+      if (!valid) return;
+
+      try {
+        const formData = new FormData(form);
+        const resp = await fetch("api/login.php", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await resp.json();
+
+        if (data.success) {
+          window.location.href = `${data.ruta}/index.php`;
+        } else {
+          passError.textContent = data.message || 'Error al iniciar sesión.';
+        }
+      } catch (err) {
+        console.error(err);
+        passError.textContent = 'Error de red. Inténtalo más tarde.';
+      }
     });
-  </script>
+  });
+</script>
+
+
+
+
+<!-- SCRIPT PARA INSERTAR EL PRIMER USUARIO 'administrador -->
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('puntoAcceso.php?modo=verificar');
+    const data = await res.json();
+
+    if (!data.existe) {
+      const modal = new bootstrap.Modal(document.getElementById('crearUsuarioModal'));
+      modal.show();
+
+      document.getElementById('btnCrearUsuario').addEventListener('click', async () => {
+        const crear = await fetch('puntoAcceso.php?modo=crear', { method: 'POST' });
+        const crearData = await crear.json();
+
+        alert(crearData.message);
+        if (crearData.success) {
+          modal.hide();
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error al inicializar:', error);
+  }
+});
+</script>
 
 </body>
+
 </html>
